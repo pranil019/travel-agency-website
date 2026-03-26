@@ -1,0 +1,78 @@
+<%- include('layout') %>
+
+<div class="container bookings-container">
+  <h1>My Bookings</h1>
+
+  <% if (bookings && bookings.length > 0) { %>
+    <div class="bookings-list">
+      <% bookings.forEach(booking => { %>
+        <div class="booking-card">
+          <div class="booking-header">
+            <h3><%= booking.packageId.name %></h3>
+            <span class="status-badge status-<%= booking.status %>">
+              <%= booking.status.toUpperCase() %>
+            </span>
+          </div>
+
+          <div class="booking-details">
+            <div class="detail-row">
+              <span class="label">Destination:</span>
+              <span class="value"><%= booking.packageId.destination %></span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Number of People:</span>
+              <span class="value"><%= booking.numberOfPeople %></span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Total Price:</span>
+              <span class="value">$<%= booking.totalPrice.toFixed(2) %></span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Booking Date:</span>
+              <span class="value"><%= booking.bookingDate.toDateString() %></span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Departure Date:</span>
+              <span class="value"><%= booking.packageId.departureDate.toDateString() %></span>
+            </div>
+          </div>
+
+          <div class="booking-actions">
+            <% if (booking.status === 'pending' || booking.status === 'confirmed') { %>
+              <button class="btn-danger" onclick="cancelBooking('<%= booking._id %>')">
+                Cancel Booking
+              </button>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="no-bookings">
+      <p>You haven't made any bookings yet.</p>
+      <a href="/packages" class="btn-primary">Browse Packages</a>
+    </div>
+  <% } %>
+</div>
+
+<script>
+  function cancelBooking(bookingId) {
+    if (confirm('Are you sure you want to cancel this booking?')) {
+      fetch(`/bookings/cancel/${bookingId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while cancelling the booking.');
+      });
+    }
+  }
+</script>

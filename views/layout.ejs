@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> - Travel Agency</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <a href="/">✈️ TravelHub</a>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="/packages">Packages</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+        <% if (user) { %>
+          <li><a href="/bookings/my-bookings">My Bookings</a></li>
+          <li><a href="/auth/logout" class="btn-logout">Logout</a></li>
+        <% } else { %>
+          <li><a href="/auth/login" class="btn-login">Login</a></li>
+          <li><a href="/auth/register" class="btn-register">Register</a></li>
+        <% } %>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <%- body %>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About TravelHub</h3>
+          <p>Your trusted partner for amazing travel experiences around the world.</p>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/packages">Packages</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Info</h3>
+          <p>Email: info@travelhub.com</p>
+          <p>Phone: +1 (555) 000-0000</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 TravelHub. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

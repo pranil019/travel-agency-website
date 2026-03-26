@@ -1,0 +1,125 @@
+<%- include('layout') %>
+
+<div class="container package-details-container">
+  <div class="package-details">
+    <div class="package-header">
+      <h1><%= package.name %></h1>
+      <div class="package-meta">
+        <span class="badge"><%= package.destination %></span>
+        <span class="badge">Departure: <%= package.departureDate.toDateString() %></span>
+      </div>
+    </div>
+
+    <div class="details-content">
+      <div class="details-main">
+        <section class="description-section">
+          <h2>Description</h2>
+          <p><%= package.description %></p>
+        </section>
+
+        <section class="highlights-section">
+          <h2>Highlights</h2>
+          <ul class="highlights-list">
+            <% package.highlights.forEach(highlight => { %>
+              <li><%= highlight %></li>
+            <% }); %>
+          </ul>
+        </section>
+
+        <section class="itinerary-section">
+          <h2>Package Details</h2>
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Duration:</span>
+              <span class="detail-value"><%= package.duration %> days</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Maximum Participants:</span>
+              <span class="detail-value"><%= package.maxParticipants %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Price per Person:</span>
+              <span class="detail-value">$<%= package.price.toFixed(2) %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status:</span>
+              <span class="detail-value <%= package.available ? 'available' : 'unavailable' %>">
+                <%= package.available ? 'Available' : 'Unavailable' %>
+              </span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="booking-sidebar">
+        <div class="booking-card">
+          <h3>Book This Package</h3>
+          <div class="price-summary">
+            <p>Price per person: <strong>$<%= package.price.toFixed(2) %></strong></p>
+            <p id="totalPrice">Total: <strong>$0.00</strong></p>
+          </div>
+
+          <% if (user) { %>
+            <form id="bookingForm" method="POST" action="/bookings/create">
+              <input type="hidden" name="packageId" value="<%= package._id %>">
+              
+              <label for="numberOfPeople">Number of People:</label>
+              <input 
+                type="number" 
+                id="numberOfPeople" 
+                name="numberOfPeople" 
+                min="1" 
+                max="<%= package.maxParticipants %>"
+                value="1"
+                required
+              />
+
+              <div id="passengers-section">
+                <label>Passenger Details:</label>
+                <div id="passengers-container"></div>
+              </div>
+
+              <button type="submit" class="btn-primary btn-block">
+                Book Now
+              </button>
+            </form>
+          <% } else { %>
+            <p class="login-prompt">
+              Please <a href="/auth/login">login</a> to book this package
+            </p>
+          <% } %>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+  const packagePrice = <%= package.price %>;
+  const maxParticipants = <%= package.maxParticipants %>;
+
+  document.getElementById('numberOfPeople').addEventListener('change', function() {
+    const people = parseInt(this.value);
+    const total = people * packagePrice;
+    document.getElementById('totalPrice').innerHTML = `Total: <strong>$${total.toFixed(2)}</strong>`;
+    
+    // Generate passenger input fields
+    const container = document.getElementById('passengers-container');
+    container.innerHTML = '';
+    
+    for (let i = 0; i < people; i++) {
+      const passengerDiv = document.createElement('div');
+      passengerDiv.className = 'passenger-input';
+      passengerDiv.innerHTML = `
+        <h4>Passenger ${i + 1}</h4>
+        <input type="text" name="passengers[${i}][name]" placeholder="Full Name" required />
+        <input type="email" name="passengers[${i}][email]" placeholder="Email" required />
+        <input type="tel" name="passengers[${i}][phone]" placeholder="Phone" required />
+      `;
+      container.appendChild(passengerDiv);
+    }
+  });
+
+  // Initialize on page load
+  document.getElementById('numberOfPeople').dispatchEvent(new Event('change'));
+</script>

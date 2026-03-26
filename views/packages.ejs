@@ -1,0 +1,68 @@
+<%- include('layout') %>
+
+<div class="container packages-container">
+  <h1>Our Travel Packages</h1>
+  
+  <div class="search-filter">
+    <form method="GET" action="/packages/search">
+      <input 
+        type="text" 
+        name="destination" 
+        placeholder="Search destination..." 
+        class="search-input"
+      />
+      <input 
+        type="number" 
+        name="maxPrice" 
+        placeholder="Max price" 
+        class="search-input"
+      />
+      <button type="submit" class="btn-primary">Search</button>
+    </form>
+  </div>
+
+  <div class="packages-grid">
+    <% if (packages && packages.length > 0) { %>
+      <% packages.forEach(pkg => { %>
+        <div class="package-card">
+          <div class="package-header">
+            <h3><%= pkg.name %></h3>
+            <span class="badge"><%= pkg.destination %></span>
+          </div>
+          <p class="description"><%= pkg.description %></p>
+          
+          <div class="package-info">
+            <div class="info-item">
+              <span class="label">Duration:</span>
+              <span class="value"><%= pkg.duration %> days</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Price:</span>
+              <span class="value price">$<%= pkg.price.toFixed(2) %></span>
+            </div>
+            <div class="info-item">
+              <span class="label">Available Seats:</span>
+              <span class="value"><%= pkg.maxParticipants %></span>
+            </div>
+          </div>
+
+          <div class="highlights">
+            <h4>Highlights:</h4>
+            <ul>
+              <% pkg.highlights.forEach(highlight => { %>
+                <li><%= highlight %></li>
+              <% }); %>
+            </ul>
+          </div>
+
+          <a href="/packages/details/<%= pkg._id %>" class="btn-primary">View Details</a>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="no-packages">
+        <p>No packages available at the moment.</p>
+        <a href="/packages" class="btn-primary">Back to All Packages</a>
+      </div>
+    <% } %>
+  </div>
+</div>
