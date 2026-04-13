@@ -1,4 +1,4 @@
-e{
+{
   "name": "travel-agency-website",
   "version": "1.0.0",
   "description": "A functional travel agency website built with Node.js, Express, and MongoDB",
