@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const connectDB = require('./config/database');
@@ -42,6 +44,15 @@ app.use((req, res, next) => {
 app.use('/auth', require('./routes/auth'));
 app.use('/packages', require('./routes/packages'));
 app.use('/bookings', require('./routes/bookings'));
+
+// Optional React frontend build (served at /app when built)
+const clientDistPath = path.join(__dirname, 'client', 'dist');
+const clientIndexHtml = path.join(clientDistPath, 'index.html');
+if (fs.existsSync(clientIndexHtml)) {
+  app.use('/app', express.static(clientDistPath, { index: false }));
+  app.get('/app', (req, res) => res.sendFile(clientIndexHtml));
+  app.get('/app/*', (req, res) => res.sendFile(clientIndexHtml));
+}
 
 // Home route
 app.get('/', (req, res) => {

@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "dev:client": "npm --prefix client run dev",
+    "dev:full": "concurrently \"npm run dev\" \"npm run dev:client\"",
+    "build:client": "npm --prefix client run build"
   },
   "keywords": ["travel", "express", "mongodb", "nodejs"],
   "author": "",
@@ -21,6 +24,7 @@
     "connect-mongo": "^5.0.1"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "nodemon": "^2.0.20"
   }
 }

@@ -119,6 +119,26 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/travel-agency?re
 npm run dev
 ```
 
+### React Frontend (separate)
+
+The React app lives in `client/` and can be run separately during development:
+
+```bash
+npm install
+npm --prefix client install
+npm run dev:full
+```
+
+- Express runs at `http://localhost:3000`
+- React (Vite) runs at `http://localhost:5173`
+
+To serve the built React app from Express under `http://localhost:3000/app`:
+
+```bash
+npm --prefix client run build
+npm start
+```
+
 ### Production Mode
 
 ```bash
