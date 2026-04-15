@@ -30,7 +30,13 @@ exports.createBooking = async (req, res) => {
     });
 
     await booking.save();
-    res.status(201).json({ message: 'Booking created successfully', booking });
+
+    const acceptHeader = req.headers.accept || '';
+    if (acceptHeader.includes('text/html')) {
+      return res.redirect('/bookings/my-bookings');
+    }
+
+    return res.status(201).json({ message: 'Booking created successfully', booking });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error creating booking', error: error.message });
@@ -55,6 +61,10 @@ exports.getUserBookings = async (req, res) => {
 // Cancel booking
 exports.cancelBooking = async (req, res) => {
   try {
+    if (!req.session.user) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
     const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
@@ -93,6 +103,10 @@ exports.getAllBookings = async (req, res) => {
 // Update booking status (Admin)
 exports.updateBookingStatus = async (req, res) => {
   try {
+    if (!req.session.user || !req.session.user.isAdmin) {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
     const { status } = req.body;
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,

@@ -2,41 +2,66 @@
 
 <div class="container auth-container">
   <div class="auth-card">
-    <h1>Login to Your Account</h1>
+    <% if (!role) { %>
+      <h1>Login</h1>
+      <p class="muted-text">Choose how you want to sign in.</p>
+
+      <div class="role-grid">
+        <a class="role-card" href="/auth/login?role=user">
+          <h2>User Login</h2>
+          <p>View packages, book trips, and manage your bookings.</p>
+        </a>
+        <a class="role-card" href="/auth/login?role=admin">
+          <h2>Travel Agency Admin</h2>
+          <p>Create packages and track bookings from your dashboard.</p>
+        </a>
+      </div>
+
+      <p class="auth-footer">
+        New here? <a href="/auth/register">Create a user account</a>
+      </p>
+    <% } else { %>
+      <h1><%= role === 'admin' ? 'Admin Login' : 'User Login' %></h1>
     
-    <% if (message) { %>
-      <div class="alert-error"><%= message %></div>
+      <% if (message) { %>
+        <div class="alert-error"><%= message %></div>
+      <% } %>
+
+      <form method="POST" action="/auth/login" class="auth-form">
+        <input type="hidden" name="role" value="<%= role %>">
+
+        <div class="form-group">
+          <label for="email">Email Address:</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="your@email.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-primary btn-block">Login</button>
+      </form>
+
+      <p class="auth-footer">
+        <a href="/auth/login">Back to login options</a>
+        <% if (role !== 'admin') { %>
+          &nbsp;•&nbsp;Don't have an account? <a href="/auth/register">Register here</a>
+        <% } %>
+      </p>
     <% } %>
-
-    <form method="POST" action="/auth/login" class="auth-form">
-      <div class="form-group">
-        <label for="email">Email Address:</label>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          placeholder="your@email.com"
-          required
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          placeholder="Enter your password"
-          required
-        />
-      </div>
-
-      <button type="submit" class="btn-primary btn-block">Login</button>
-    </form>
-
-    <p class="auth-footer">
-      Don't have an account? <a href="/auth/register">Register here</a>
-    </p>
   </div>
 </div>
 

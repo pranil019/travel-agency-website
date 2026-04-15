@@ -19,7 +19,12 @@
         <li><a href="/about">About</a></li>
         <li><a href="/contact">Contact</a></li>
         <% if (user) { %>
-          <li><a href="/bookings/my-bookings">My Bookings</a></li>
+          <% if (user.isAdmin) { %>
+            <li><a href="/admin">Admin Dashboard</a></li>
+          <% } else { %>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/bookings/my-bookings">My Bookings</a></li>
+          <% } %>
           <li><a href="/auth/logout" class="btn-logout">Logout</a></li>
         <% } else { %>
           <li><a href="/auth/login" class="btn-login">Login</a></li>

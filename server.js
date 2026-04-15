@@ -44,6 +44,7 @@ app.use((req, res, next) => {
 app.use('/auth', require('./routes/auth'));
 app.use('/packages', require('./routes/packages'));
 app.use('/bookings', require('./routes/bookings'));
+app.use('/', require('./routes/dashboard'));
 
 // Optional React frontend build (served at /app when built)
 const clientDistPath = path.join(__dirname, 'client', 'dist');

@@ -1,0 +1,212 @@
+<%- include('partials/header') %>
+
+<div class="container dashboard-container">
+  <div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p class="muted-text">
+      Packages: <strong><%= packageCount %></strong> · Bookings: <strong><%= bookingCount %></strong>
+    </p>
+  </div>
+
+  <div class="dashboard-grid admin-grid">
+    <section class="dashboard-card">
+      <h2>Create Package</h2>
+
+      <form id="createPackageForm" class="auth-form">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input id="name" name="name" required />
+        </div>
+        <div class="form-group">
+          <label for="destination">Destination</label>
+          <input id="destination" name="destination" required />
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="price">Price (per person)</label>
+          <input id="price" name="price" type="number" min="0" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label for="duration">Duration (days)</label>
+          <input id="duration" name="duration" type="number" min="1" step="1" required />
+        </div>
+        <div class="form-group">
+          <label for="maxParticipants">Max participants</label>
+          <input id="maxParticipants" name="maxParticipants" type="number" min="1" step="1" required />
+        </div>
+        <div class="form-group">
+          <label for="highlights">Highlights (comma-separated)</label>
+          <input id="highlights" name="highlights" placeholder="Flights, Hotel, Meals" required />
+        </div>
+        <div class="form-group">
+          <label for="departureDate">Departure date</label>
+          <input id="departureDate" name="departureDate" type="date" required />
+        </div>
+
+        <button type="submit" class="btn-primary btn-block">Create Package</button>
+      </form>
+    </section>
+
+    <section class="dashboard-card">
+      <h2>Manage Packages</h2>
+
+      <% if (packages && packages.length > 0) { %>
+        <div class="admin-packages-list">
+          <% packages.forEach(pkg => { %>
+            <div class="admin-package-row" data-package-id="<%= pkg._id %>">
+              <div class="admin-package-main">
+                <div class="admin-package-title">
+                  <strong><%= pkg.name %></strong>
+                  <span class="badge"><%= pkg.destination %></span>
+                </div>
+                <div class="admin-package-meta muted-text">
+                  $<%= pkg.price.toFixed(2) %> · <%= pkg.duration %> days · seats: <%= pkg.maxParticipants %>
+                </div>
+              </div>
+              <div class="admin-package-actions">
+                <button class="btn-secondary" type="button" onclick="editPackage('<%= pkg._id %>')">Edit</button>
+                <button class="btn-danger" type="button" onclick="deletePackage('<%= pkg._id %>')">Delete</button>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <p>No packages yet.</p>
+      <% } %>
+    </section>
+
+    <section class="dashboard-card admin-full">
+      <h2>Recent Bookings</h2>
+
+      <% if (recentBookings && recentBookings.length > 0) { %>
+        <div class="admin-bookings-list">
+          <table class="bookings-table">
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>Customer</th>
+                <th>People</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Booked</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentBookings.forEach(booking => { %>
+                <tr>
+                  <td><%= booking.packageId ? booking.packageId.name : 'Package' %></td>
+                  <td><%= booking.userId ? booking.userId.name : 'User' %></td>
+                  <td><%= booking.numberOfPeople %></td>
+                  <td>$<%= booking.totalPrice.toFixed(2) %></td>
+                  <td><span class="status-badge status-<%= booking.status %>"><%= booking.status %></span></td>
+                  <td><%= booking.bookingDate.toDateString() %></td>
+                  <td>
+                    <select onchange="updateStatus('<%= booking._id %>', this.value)">
+                      <option value="pending" <%= booking.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                      <option value="confirmed" <%= booking.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                      <option value="cancelled" <%= booking.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    </select>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+
+        <a href="/bookings/all" class="btn-secondary">View All Bookings</a>
+      <% } else { %>
+        <p>No bookings yet.</p>
+      <% } %>
+    </section>
+  </div>
+</div>
+
+<script>
+  const createPackageForm = document.getElementById('createPackageForm');
+  createPackageForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(createPackageForm);
+    const payload = Object.fromEntries(formData.entries());
+
+    const res = await fetch('/packages/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert(data.message || 'Failed to create package');
+      return;
+    }
+
+    location.reload();
+  });
+
+  async function deletePackage(packageId) {
+    if (!confirm('Delete this package?')) return;
+
+    const res = await fetch(`/packages/delete/${packageId}`, { method: 'DELETE' });
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      alert(data.message || 'Failed to delete package');
+      return;
+    }
+
+    location.reload();
+  }
+
+  async function editPackage(packageId) {
+    const row = document.querySelector(`[data-package-id="${packageId}"]`);
+    const name = prompt('New package name (leave blank to keep current):');
+    const destination = prompt('New destination (leave blank to keep current):');
+    const price = prompt('New price (leave blank to keep current):');
+    const duration = prompt('New duration in days (leave blank to keep current):');
+    const maxParticipants = prompt('New max participants (leave blank to keep current):');
+
+    const patch = {};
+    if (name) patch.name = name;
+    if (destination) patch.destination = destination;
+    if (price) patch.price = Number(price);
+    if (duration) patch.duration = Number(duration);
+    if (maxParticipants) patch.maxParticipants = Number(maxParticipants);
+
+    if (Object.keys(patch).length === 0) return;
+
+    const res = await fetch(`/packages/update/${packageId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch)
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      alert(data.message || 'Failed to update package');
+      return;
+    }
+
+    if (row) row.classList.add('flash');
+    setTimeout(() => location.reload(), 150);
+  }
+
+  async function updateStatus(bookingId, status) {
+    const res = await fetch(`/bookings/status/${bookingId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert(data.message || 'Failed to update booking');
+      return;
+    }
+  }
+</script>
+
+<%- include('partials/footer') %>
+

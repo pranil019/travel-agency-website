@@ -21,7 +21,7 @@ exports.register = async (req, res) => {
     await user.save();
 
     req.session.user = { _id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin };
-    res.redirect('/');
+    res.redirect('/dashboard');
   } catch (error) {
     console.error(error);
     res.status(500).render('register', { message: 'Error registering user', title: 'Register' });
@@ -31,27 +31,49 @@ exports.register = async (req, res) => {
 // Login user
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     if (!email || !password) {
-      return res.render('login', { message: 'Please provide email and password' });
+      return res.render('login', {
+        title: role === 'admin' ? 'Admin Login' : 'Login',
+        message: 'Please provide email and password',
+        role: role || null,
+      });
     }
 
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return res.render('login', { message: 'Invalid credentials' });
+      return res.render('login', {
+        title: role === 'admin' ? 'Admin Login' : 'Login',
+        message: 'Invalid credentials',
+        role: role || null,
+      });
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.render('login', { message: 'Invalid credentials' });
+      return res.render('login', {
+        title: role === 'admin' ? 'Admin Login' : 'Login',
+        message: 'Invalid credentials',
+        role: role || null,
+      });
+    }
+
+    if (role === 'admin' && !user.isAdmin) {
+      return res.render('login', {
+        title: 'Admin Login',
+        message: 'This account is not an admin account',
+        role: 'admin',
+      });
     }
 
     req.session.user = { _id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin };
-    res.redirect('/');
+
+    if (user.isAdmin) return res.redirect('/admin');
+    return res.redirect('/dashboard');
   } catch (error) {
     console.error(error);
-    res.status(500).render('login', { message: 'Error logging in', title: 'Login' });
+    res.status(500).render('login', { message: 'Error logging in', title: 'Login', role: null });
   }
 };
 
@@ -67,7 +89,12 @@ exports.logout = (req, res) => {
 
 // Get login page
 exports.getLoginPage = (req, res) => {
-  res.render('login', { title: 'Login', message: '' });
+  const role = req.query.role === 'admin' ? 'admin' : req.query.role === 'user' ? 'user' : null;
+  res.render('login', {
+    title: role === 'admin' ? 'Admin Login' : 'Login',
+    message: '',
+    role,
+  });
 };
 
 // Get register page

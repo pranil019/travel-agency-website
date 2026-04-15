@@ -313,6 +313,116 @@ body {
   padding: 2rem 0;
 }
 
+.muted-text {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.role-card {
+  display: block;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.role-card h2 {
+  color: #667eea;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-container {
+  padding: 2rem 0;
+}
+
+.dashboard-header {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card h2 {
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.bookings-list.compact .booking-card {
+  padding: 1rem;
+}
+
+.admin-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.admin-full {
+  grid-column: 1 / -1;
+}
+
+.admin-packages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-package-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: #fafbff;
+}
+
+.admin-package-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-package-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.flash {
+  animation: flashBg 0.6s ease-in-out;
+}
+
+@keyframes flashBg {
+  0% { background: #e7f5ff; }
+  100% { background: #fafbff; }
+}
+
 .auth-card {
   background: white;
   padding: 2rem;
@@ -921,6 +1031,15 @@ body {
 
   .search-input {
     width: 100%;
+  }
+
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid,
+  .admin-grid {
+    grid-template-columns: 1fr;
   }
 }
 

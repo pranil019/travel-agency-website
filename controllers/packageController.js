@@ -40,12 +40,22 @@ exports.createPackage = async (req, res) => {
       price,
       duration,
       maxParticipants,
-      highlights: highlights.split(',').map((h) => h.trim()),
+      highlights: Array.isArray(highlights)
+        ? highlights
+        : String(highlights || '')
+            .split(',')
+            .map((h) => h.trim())
+            .filter(Boolean),
       departureDate,
     });
 
     await newPackage.save();
-    res.status(201).json({ message: 'Package created successfully', package: newPackage });
+
+    if ((req.headers.accept || '').includes('text/html')) {
+      return res.redirect('/admin');
+    }
+
+    return res.status(201).json({ message: 'Package created successfully', package: newPackage });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error creating package', error: error.message });
