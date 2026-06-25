@@ -194,6 +194,17 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* Utility text styles used by templates */
+.bold-black {
+  color: #000 !important;
+  font-weight: 700;
+}
+
+.bold-white {
+  color: #fff !important;
+  font-weight: 700;
+}
+
 .package-card p {
   color: #666;
   margin-bottom: 1rem;
@@ -914,7 +925,8 @@ body {
 
 .footer-section h3 {
   margin-bottom: 1rem;
-  color: #fda4af;
+  color: #fff;
+  font-weight: 700;
 }
 
 .footer-section {
