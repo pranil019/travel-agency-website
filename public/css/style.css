@@ -4,6 +4,15 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Theme colors based on footer */
+  --theme-top: #1f2937; /* footer top */
+  --theme-bottom: #111827; /* footer bottom */
+  --navbar-top: #0f1724; /* slightly darker than footer */
+  --navbar-bottom: #0b1220; /* slightly darker than footer */
+  --theme-contrast: #ffffff;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
@@ -19,8 +28,8 @@ body {
 
 /* Navigation */
 .navbar {
-  background: tomato;
-  color: white;
+  background: linear-gradient(180deg, var(--navbar-top), var(--navbar-bottom));
+  color: var(--theme-contrast);
   padding: 1rem 0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: sticky;
@@ -40,7 +49,7 @@ body {
   gap: 0.65rem;
   font-size: 1.5rem;
   font-weight: bold;
-  color: white;
+  color: var(--theme-contrast);
   text-decoration: none;
 }
 
@@ -59,7 +68,7 @@ body {
 }
 
 .nav-menu a {
-  color: white;
+  color: var(--theme-contrast);
   text-decoration: none;
   transition: opacity 0.3s;
 }
@@ -135,8 +144,8 @@ body {
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(135deg, #ef4444 0%, #ec4899 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--theme-top), var(--theme-bottom));
+  color: var(--theme-contrast);
   padding: 6rem 2rem;
   text-align: center;
   margin-bottom: 3rem;
@@ -176,6 +185,14 @@ body {
   padding: 1.5rem;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Center align content inside package cards */
+.package-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .package-card:hover {
@@ -910,8 +927,8 @@ body {
 
 /* Footer */
 .footer {
-  background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-  color: white;
+  background: linear-gradient(180deg, var(--theme-top), var(--theme-bottom));
+  color: var(--theme-contrast);
   padding: 3rem 0;
   margin-top: 4rem;
 }
@@ -923,13 +940,13 @@ body {
   margin-bottom: 2rem;
 }
 
-.footer-section h3 {
-  margin-bottom: 1rem;
-  color: #fff;
-  font-weight: 700;
+.footer-section a {
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
 }
-
-.footer-section {
+.footer-section a:hover {
+  color: #fff;
+}
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
@@ -957,10 +974,10 @@ body {
 }
 
 .footer-bottom {
-  border-top: 1px solid #555;
+  border-top: 1px solid rgba(255,255,255,0.08);
   padding-top: 1rem;
   text-align: center;
-  color: #999;
+  color: rgba(255,255,255,0.7);
 }
 
 /* About Section */
