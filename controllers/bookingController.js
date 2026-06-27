@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const Package = require('../models/Package');
+const { logActivity } = require('../utils/activityLogger');
 
 // Create booking
 exports.createBooking = async (req, res) => {
@@ -31,6 +32,22 @@ exports.createBooking = async (req, res) => {
 
     await booking.save();
 
+    await logActivity(req, {
+      actionType: 'booking_create',
+      actorType: 'user',
+      userId: req.session.user._id,
+      userEmail: req.session.user.email,
+      userName: req.session.user.name,
+      entityType: 'booking',
+      entityId: booking._id,
+      status: 'success',
+      metadata: {
+        packageId,
+        numberOfPeople,
+        totalPrice,
+      },
+    });
+
     const acceptHeader = req.headers.accept || '';
     if (acceptHeader.includes('text/html')) {
       return res.redirect('/bookings/my-bookings');
@@ -51,6 +68,15 @@ exports.getUserBookings = async (req, res) => {
     }
 
     const bookings = await Booking.find({ userId: req.session.user._id }).populate('packageId');
+
+    await logActivity(req, {
+      actionType: 'booking_list_view',
+      actorType: req.session.user.isAdmin ? 'admin' : 'user',
+      entityType: 'booking_collection',
+      status: 'success',
+      metadata: { bookingCount: bookings.length },
+    });
+
     res.render('my-bookings', { bookings, title: 'My Bookings' });
   } catch (error) {
     console.error(error);
@@ -78,6 +104,17 @@ exports.cancelBooking = async (req, res) => {
     booking.status = 'cancelled';
     await booking.save();
 
+    await logActivity(req, {
+      actionType: 'booking_cancel',
+      actorType: req.session.user.isAdmin ? 'admin' : 'user',
+      userId: req.session.user._id,
+      userEmail: req.session.user.email,
+      userName: req.session.user.name,
+      entityType: 'booking',
+      entityId: booking._id,
+      status: 'success',
+    });
+
     res.json({ message: 'Booking cancelled successfully' });
   } catch (error) {
     console.error(error);
@@ -93,6 +130,15 @@ exports.getAllBookings = async (req, res) => {
     }
 
     const bookings = await Booking.find().populate('packageId').populate('userId');
+
+    await logActivity(req, {
+      actionType: 'admin_booking_list_view',
+      actorType: 'admin',
+      entityType: 'booking_collection',
+      status: 'success',
+      metadata: { bookingCount: bookings.length },
+    });
+
     res.render('admin-bookings', { bookings, title: 'All Bookings' });
   } catch (error) {
     console.error(error);
@@ -117,6 +163,18 @@ exports.updateBookingStatus = async (req, res) => {
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
+
+    await logActivity(req, {
+      actionType: 'booking_status_update',
+      actorType: 'admin',
+      userId: req.session.user._id,
+      userEmail: req.session.user.email,
+      userName: req.session.user.name,
+      entityType: 'booking',
+      entityId: booking._id,
+      status: 'success',
+      metadata: { newStatus: status },
+    });
 
     res.json({ message: 'Booking status updated successfully', booking });
   } catch (error) {

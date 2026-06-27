@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { logActivity } = require('../utils/activityLogger');
 
 // Register user
 exports.register = async (req, res) => {
@@ -19,6 +20,17 @@ exports.register = async (req, res) => {
     });
 
     await user.save();
+
+    await logActivity(req, {
+      actionType: 'user_register',
+      actorType: 'guest',
+      userId: user._id,
+      userEmail: user.email,
+      userName: user.name,
+      entityType: 'user',
+      entityId: user._id,
+      status: 'success',
+    });
 
     req.session.user = { _id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin };
     res.redirect('/dashboard');
@@ -52,6 +64,13 @@ exports.login = async (req, res) => {
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
+      await logActivity(req, {
+        actionType: 'user_login_failed',
+        actorType: 'guest',
+        userEmail: email,
+        status: 'invalid_password',
+      });
+
       return res.render('login', {
         title: role === 'admin' ? 'Admin Login' : 'Login',
         message: 'Invalid credentials',
@@ -60,6 +79,17 @@ exports.login = async (req, res) => {
     }
 
     if (role === 'admin' && !user.isAdmin) {
+      await logActivity(req, {
+        actionType: 'admin_login_failed',
+        actorType: 'user',
+        userId: user._id,
+        userEmail: user.email,
+        userName: user.name,
+        entityType: 'user',
+        entityId: user._id,
+        status: 'not_admin',
+      });
+
       return res.render('login', {
         title: 'Admin Login',
         message: 'This account is not an admin account',
@@ -68,6 +98,17 @@ exports.login = async (req, res) => {
     }
 
     req.session.user = { _id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin };
+
+    await logActivity(req, {
+      actionType: user.isAdmin ? 'admin_login' : 'user_login',
+      actorType: user.isAdmin ? 'admin' : 'user',
+      userId: user._id,
+      userEmail: user.email,
+      userName: user.name,
+      entityType: 'user',
+      entityId: user._id,
+      status: 'success',
+    });
 
     if (user.isAdmin) return res.redirect('/admin');
     return res.redirect('/dashboard');
@@ -79,10 +120,26 @@ exports.login = async (req, res) => {
 
 // Logout user
 exports.logout = (req, res) => {
+  const sessionUser = req.session && req.session.user ? { ...req.session.user } : null;
+
   req.session.destroy((error) => {
     if (error) {
       return res.status(500).json({ message: 'Error logging out' });
     }
+
+    if (sessionUser) {
+      logActivity(req, {
+        actionType: sessionUser.isAdmin ? 'admin_logout' : 'user_logout',
+        actorType: sessionUser.isAdmin ? 'admin' : 'user',
+        userId: sessionUser._id,
+        userEmail: sessionUser.email,
+        userName: sessionUser.name,
+        entityType: 'user',
+        entityId: sessionUser._id,
+        status: 'success',
+      }).catch(() => {});
+    }
+
     res.redirect('/');
   });
 };

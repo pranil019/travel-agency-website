@@ -44,6 +44,7 @@ app.use((req, res, next) => {
 app.use('/auth', require('./routes/auth'));
 app.use('/packages', require('./routes/packages'));
 app.use('/bookings', require('./routes/bookings'));
+app.use('/contact', require('./routes/contact'));
 app.use('/', require('./routes/dashboard'));
 
 // Optional React frontend build (served at /app when built)
@@ -63,11 +64,6 @@ app.get('/', (req, res) => {
 // About route
 app.get('/about', (req, res) => {
   res.render('about', { title: 'About Us' });
-});
-
-// Contact route
-app.get('/contact', (req, res) => {
-  res.render('contact', { title: 'Contact Us' });
 });
 
 // 404 route

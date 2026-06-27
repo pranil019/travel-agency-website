@@ -1,9 +1,18 @@
 const Package = require('../models/Package');
+const { logActivity } = require('../utils/activityLogger');
 
 // Get all packages
 exports.getAllPackages = async (req, res) => {
   try {
     const packages = await Package.find({ available: true });
+
+    await logActivity(req, {
+      actionType: 'package_list_view',
+      entityType: 'package_collection',
+      status: 'success',
+      metadata: { resultCount: packages.length },
+    });
+
     res.render('packages', { packages, title: 'Travel Packages' });
   } catch (error) {
     console.error(error);
@@ -21,6 +30,17 @@ exports.getPackageDetails = async (req, res) => {
     res.render('package-details', {
       package: packageItem,
       title: packageItem.name,
+    });
+
+    await logActivity(req, {
+      actionType: 'package_view',
+      entityType: 'package',
+      entityId: packageItem._id,
+      status: 'success',
+      metadata: {
+        packageName: packageItem.name,
+        destination: packageItem.destination,
+      },
     });
   } catch (error) {
     console.error(error);
@@ -51,6 +71,18 @@ exports.createPackage = async (req, res) => {
 
     await newPackage.save();
 
+    await logActivity(req, {
+      actionType: 'package_create',
+      actorType: 'admin',
+      userId: req.session.user && req.session.user._id,
+      userEmail: req.session.user && req.session.user.email,
+      userName: req.session.user && req.session.user.name,
+      entityType: 'package',
+      entityId: newPackage._id,
+      status: 'success',
+      metadata: { packageName: newPackage.name, destination: newPackage.destination },
+    });
+
     if ((req.headers.accept || '').includes('text/html')) {
       return res.redirect('/admin');
     }
@@ -74,6 +106,18 @@ exports.updatePackage = async (req, res) => {
       return res.status(404).json({ message: 'Package not found' });
     }
 
+    await logActivity(req, {
+      actionType: 'package_update',
+      actorType: 'admin',
+      userId: req.session.user && req.session.user._id,
+      userEmail: req.session.user && req.session.user.email,
+      userName: req.session.user && req.session.user.name,
+      entityType: 'package',
+      entityId: packageItem._id,
+      status: 'success',
+      metadata: { packageName: packageItem.name },
+    });
+
     res.json({ message: 'Package updated successfully', package: packageItem });
   } catch (error) {
     console.error(error);
@@ -89,6 +133,18 @@ exports.deletePackage = async (req, res) => {
     if (!packageItem) {
       return res.status(404).json({ message: 'Package not found' });
     }
+
+    await logActivity(req, {
+      actionType: 'package_delete',
+      actorType: 'admin',
+      userId: req.session.user && req.session.user._id,
+      userEmail: req.session.user && req.session.user.email,
+      userName: req.session.user && req.session.user.name,
+      entityType: 'package',
+      entityId: packageItem._id,
+      status: 'success',
+      metadata: { packageName: packageItem.name },
+    });
 
     res.json({ message: 'Package deleted successfully' });
   } catch (error) {
@@ -111,6 +167,14 @@ exports.searchPackages = async (req, res) => {
     }
 
     const packages = await Package.find(filter);
+
+    await logActivity(req, {
+      actionType: 'package_search',
+      entityType: 'package_collection',
+      status: 'success',
+      metadata: { destination: destination || '', maxPrice: maxPrice || '' },
+    });
+
     res.render('packages', { packages, title: 'Search Results' });
   } catch (error) {
     console.error(error);
