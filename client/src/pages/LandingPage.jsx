@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const heroBackgroundImage = "/images/explore-world.png";
 
   return (
     <div className="min-h-screen bg-slate-950 text-white selection:bg-rose-500/30">
@@ -95,7 +96,12 @@ const LandingPage = () => {
         ) : null}
       </nav>
 
-      <main id="top" className="relative pt-32 pb-20 px-6">
+      <main id="top" className="relative isolate overflow-hidden pt-32 pb-20 px-6">
+        <div
+          className="absolute inset-0 -z-20 bg-center bg-cover opacity-20"
+          style={{ backgroundImage: `url(${heroBackgroundImage})` }}
+        />
+        <div className="absolute inset-0 -z-10 bg-slate-950/70" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-rose-500/15 blur-[120px] rounded-full -z-10" />
 
         <div className="max-w-7xl mx-auto text-center">
