@@ -6,6 +6,7 @@ function renderRegister(res, options = {}) {
     title: 'Register',
     message: '',
     selectedRole: 'user',
+    adminRegistrationEnabled: Boolean(process.env.ADMIN_REGISTRATION_KEY),
     ...options,
   });
 }
@@ -23,6 +24,7 @@ exports.register = async (req, res) => {
         title: 'Register',
         message: 'An account with this email already exists',
         selectedRole,
+        adminRegistrationEnabled: Boolean(process.env.ADMIN_REGISTRATION_KEY),
       });
     }
 
@@ -31,6 +33,7 @@ exports.register = async (req, res) => {
         title: 'Register',
         message: 'Invalid admin registration code',
         selectedRole: 'admin',
+        adminRegistrationEnabled: Boolean(process.env.ADMIN_REGISTRATION_KEY),
       });
     }
 
@@ -61,8 +64,7 @@ exports.register = async (req, res) => {
     return res.redirect(user.isAdmin ? '/admin' : '/dashboard');
   } catch (error) {
     console.error(error);
-    return res.status(500).render('register', {
-      title: 'Register',
+    return renderRegister(res.status(500), {
       message: 'Error registering user',
       selectedRole: 'user',
     });

@@ -18,11 +18,11 @@
       </div>
 
       <p class="auth-footer">
-        New here? <a href="/auth/register">Create a user account</a>
+        New here? <a href="/auth/register">Create a user or admin account</a>
       </p>
     <% } else { %>
       <h1><%= role === 'admin' ? 'Admin Login' : 'User Login' %></h1>
-    
+
       <% if (message) { %>
         <div class="alert-error"><%= message %></div>
       <% } %>
@@ -32,10 +32,10 @@
 
         <div class="form-group">
           <label for="email">Email Address:</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
+          <input
+            type="email"
+            id="email"
+            name="email"
             placeholder="your@email.com"
             required
           />
@@ -43,10 +43,10 @@
 
         <div class="form-group">
           <label for="password">Password:</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
+          <input
+            type="password"
+            id="password"
+            name="password"
             placeholder="Enter your password"
             required
           />
@@ -58,7 +58,7 @@
       <p class="auth-footer">
         <a href="/auth/login">Back to login options</a>
         <% if (role !== 'admin') { %>
-          &nbsp;•&nbsp;Don't have an account? <a href="/auth/register">Register here</a>
+          &nbsp;&bull;&nbsp;Need a user or admin account? <a href="/auth/register">Register here</a>
         <% } %>
       </p>
     <% } %>
