@@ -1,70 +1,161 @@
 <%- include('partials/header') %>
 
-<div class="container auth-container">
-  <div class="auth-card">
-    <h1>Create Your Account</h1>
-    
+<div class="container auth-container auth-container-wide">
+  <div class="auth-card auth-card-wide">
+    <h1>Create an Account</h1>
+    <p class="muted-text">Set up a user account to book trips, or an admin account to create travel packages.</p>
+
     <% if (message) { %>
       <div class="alert-error"><%= message %></div>
     <% } %>
 
-    <form method="POST" action="/auth/register" class="auth-form">
-      <div class="form-group">
-        <label for="name">Full Name:</label>
-        <input 
-          type="text" 
-          id="name" 
-          name="name" 
-          placeholder="Your full name"
-          required
-        />
-      </div>
+    <div class="register-grid">
+      <section class="register-panel <%= selectedRole === 'user' ? 'active' : '' %>">
+        <div class="register-panel-header">
+          <h2>User Account</h2>
+          <p>Browse packages, add bookings, and manage your reservations.</p>
+        </div>
 
-      <div class="form-group">
-        <label for="email">Email Address:</label>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          placeholder="your@email.com"
-          required
-        />
-      </div>
+        <form method="POST" action="/auth/register" class="auth-form">
+          <input type="hidden" name="accountType" value="user" />
 
-      <div class="form-group">
-        <label for="phone">Phone Number:</label>
-        <input 
-          type="tel" 
-          id="phone" 
-          name="phone" 
-          placeholder="Your phone number"
-          required
-        />
-      </div>
+          <div class="form-group">
+            <label for="user-name">Full Name:</label>
+            <input
+              type="text"
+              id="user-name"
+              name="name"
+              placeholder="Your full name"
+              required
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="address">Address (Optional):</label>
-        <input 
-          type="text" 
-          id="address" 
-          name="address" 
-          placeholder="Your address"
-        />
-      </div>
+          <div class="form-group">
+            <label for="user-email">Email Address:</label>
+            <input
+              type="email"
+              id="user-email"
+              name="email"
+              placeholder="your@email.com"
+              required
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          placeholder="Enter a strong password"
-          required
-        />
-      </div>
+          <div class="form-group">
+            <label for="user-phone">Phone Number:</label>
+            <input
+              type="tel"
+              id="user-phone"
+              name="phone"
+              placeholder="Your phone number"
+              required
+            />
+          </div>
 
-      <button type="submit" class="btn-primary btn-block">Register</button>
-    </form>
+          <div class="form-group">
+            <label for="user-address">Address (Optional):</label>
+            <input
+              type="text"
+              id="user-address"
+              name="address"
+              placeholder="Your address"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="user-password">Password:</label>
+            <input
+              type="password"
+              id="user-password"
+              name="password"
+              placeholder="Enter a strong password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-primary btn-block">Create User Account</button>
+        </form>
+      </section>
+
+      <section class="register-panel admin-panel <%= selectedRole === 'admin' ? 'active' : '' %>">
+        <div class="register-panel-header">
+          <h2>Admin Account</h2>
+          <p>Create a manager account that can sign in later and publish packages.</p>
+        </div>
+
+        <form method="POST" action="/auth/register" class="auth-form">
+          <input type="hidden" name="accountType" value="admin" />
+
+          <div class="form-group">
+            <label for="admin-name">Full Name:</label>
+            <input
+              type="text"
+              id="admin-name"
+              name="name"
+              placeholder="Admin full name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="admin-email">Email Address:</label>
+            <input
+              type="email"
+              id="admin-email"
+              name="email"
+              placeholder="admin@email.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="admin-phone">Phone Number:</label>
+            <input
+              type="tel"
+              id="admin-phone"
+              name="phone"
+              placeholder="Admin phone number"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="admin-address">Address (Optional):</label>
+            <input
+              type="text"
+              id="admin-address"
+              name="address"
+              placeholder="Admin address"
+            />
+          </div>
+
+          <% if (adminRegistrationEnabled) { %>
+            <div class="form-group">
+              <label for="admin-key">Admin Registration Code:</label>
+              <input
+                type="password"
+                id="admin-key"
+                name="adminKey"
+                placeholder="Enter the admin code"
+              />
+            </div>
+          <% } %>
+
+          <div class="form-group">
+            <label for="admin-password">Password:</label>
+            <input
+              type="password"
+              id="admin-password"
+              name="password"
+              placeholder="Enter a strong password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-primary btn-block">Create Admin Account</button>
+        </form>
+      </section>
+    </div>
 
     <p class="auth-footer">
       Already have an account? <a href="/auth/login">Login here</a>

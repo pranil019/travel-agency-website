@@ -1,14 +1,37 @@
 const User = require('../models/User');
 const { logActivity } = require('../utils/activityLogger');
 
+function renderRegister(res, options = {}) {
+  return res.render('register', {
+    title: 'Register',
+    message: '',
+    selectedRole: 'user',
+    ...options,
+  });
+}
+
 // Register user
 exports.register = async (req, res) => {
   try {
-    const { name, email, phone, password, address } = req.body;
+    const { name, email, phone, password, address, accountType, adminKey } = req.body;
+    const selectedRole = accountType === 'admin' ? 'admin' : 'user';
+    const adminRegistrationKey = process.env.ADMIN_REGISTRATION_KEY;
 
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).render('register', { message: 'User already exists' });
+      return res.status(400).render('register', {
+        title: 'Register',
+        message: 'An account with this email already exists',
+        selectedRole,
+      });
+    }
+
+    if (selectedRole === 'admin' && adminRegistrationKey && adminKey !== adminRegistrationKey) {
+      return res.status(400).render('register', {
+        title: 'Register',
+        message: 'Invalid admin registration code',
+        selectedRole: 'admin',
+      });
     }
 
     user = new User({
@@ -17,12 +40,13 @@ exports.register = async (req, res) => {
       phone,
       password,
       address,
+      isAdmin: selectedRole === 'admin',
     });
 
     await user.save();
 
     await logActivity(req, {
-      actionType: 'user_register',
+      actionType: selectedRole === 'admin' ? 'admin_register' : 'user_register',
       actorType: 'guest',
       userId: user._id,
       userEmail: user.email,
@@ -33,10 +57,15 @@ exports.register = async (req, res) => {
     });
 
     req.session.user = { _id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin };
-    res.redirect('/dashboard');
+
+    return res.redirect(user.isAdmin ? '/admin' : '/dashboard');
   } catch (error) {
     console.error(error);
-    res.status(500).render('register', { message: 'Error registering user', title: 'Register' });
+    return res.status(500).render('register', {
+      title: 'Register',
+      message: 'Error registering user',
+      selectedRole: 'user',
+    });
   }
 };
 
@@ -156,5 +185,11 @@ exports.getLoginPage = (req, res) => {
 
 // Get register page
 exports.getRegisterPage = (req, res) => {
-  res.render('register', { title: 'Register', message: '' });
+  const selectedRole = req.query.role === 'admin' ? 'admin' : 'user';
+  const adminRegistrationEnabled = Boolean(process.env.ADMIN_REGISTRATION_KEY);
+
+  return renderRegister(res, {
+    selectedRole,
+    adminRegistrationEnabled,
+  });
 };

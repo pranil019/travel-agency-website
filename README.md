@@ -104,6 +104,7 @@ PORT=3000
 MONGODB_URI=mongodb://localhost:27017/travel-agency
 NODE_ENV=development
 SESSION_SECRET=your-secret-key-change-this-in-production
+ADMIN_REGISTRATION_KEY=travel-agency-admin
 ```
 
 **For MongoDB Atlas, use:**
@@ -151,9 +152,10 @@ The application will start at `http://localhost:3000`
 
 ### First-Time Setup
 
-1. **Register a User Account**
+1. **Register an Account**
    - Click "Register" in the navigation
-   - Fill in your details and create an account
+   - Use the user form for booking access or the admin form for package management
+   - Admin signup requires the `ADMIN_REGISTRATION_KEY` from your `.env`
 
 2. **Browse Packages**
    - Go to "Packages" or browse featured destinations on the home page
@@ -171,16 +173,7 @@ The application will start at `http://localhost:3000`
 
 ### Admin Features
 
-To enable admin features, manually update a user in MongoDB:
-
-```javascript
-db.users.updateOne(
-  { email: "admin@example.com" },
-  { $set: { isAdmin: true } }
-)
-```
-
-Then admin can:
+Admin accounts can now be created directly from the register page. Once signed in, admin users can:
 - Create packages via POST to `/packages/create`
 - Manage all bookings at `/bookings/all`
 - Update package details and availability

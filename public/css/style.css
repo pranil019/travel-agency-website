@@ -358,6 +358,10 @@ body {
   padding: 2rem 0;
 }
 
+.auth-container-wide {
+  align-items: flex-start;
+}
+
 .muted-text {
   color: #666;
   margin-bottom: 1rem;
@@ -477,10 +481,47 @@ body {
   max-width: 400px;
 }
 
+.auth-card-wide {
+  max-width: 960px;
+}
+
 .auth-card h1 {
   text-align: center;
   color: #667eea;
   margin-bottom: 1.5rem;
+}
+
+.register-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.register-panel {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.25rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+}
+
+.register-panel.active {
+  border-color: #f59e0b;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.12);
+}
+
+.register-panel-header {
+  margin-bottom: 1rem;
+}
+
+.register-panel-header h2 {
+  color: #667eea;
+  margin-bottom: 0.25rem;
+}
+
+.register-panel-header p {
+  color: #666;
+  font-size: 0.95rem;
 }
 
 .auth-form {
@@ -1090,6 +1131,10 @@ body {
   }
 
   .role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .register-grid {
     grid-template-columns: 1fr;
   }
 

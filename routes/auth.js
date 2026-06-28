@@ -25,6 +25,7 @@ router.get('/register', async (req, res, next) => {
 			actionType: 'register_page_view',
 			entityType: 'auth_page',
 			status: 'success',
+			metadata: { role: req.query.role === 'admin' ? 'admin' : 'user' },
 		});
 	} catch (error) {
 		return next(error);
